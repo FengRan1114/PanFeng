@@ -18,20 +18,32 @@ nav {
     right: 0;
     z-index: 1000;
     padding: 0;
-    /* 修复：导航栏柔和化+与下方衔接自然+统一圆角 */
     backdrop-filter: blur(12px);
     background-color: rgba(255, 255, 255, 0.98);
     box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
     border-radius: 0 0 12px 12px;
     overflow: hidden;
 }
+/* 新增：独立的左侧fixed姓名（物理上越过侧边栏） */
+.nav-left-fixed-name {
+    position: fixed; /* 固定定位，脱离文档流，覆盖在侧边栏上方 */
+    left: 30px; /* 对齐页面视口最左侧（带30px内边距，不贴边） */
+    top: 15px; /* 与导航栏高度对齐 */
+    font-size: 20px;
+    font-weight: 700;
+    color: #2c3e50;
+    letter-spacing: 0.5px;
+    z-index: 1100; /* 层级高于导航栏（1000）和侧边栏（100），确保覆盖显示 */
+}
+
+/* 原有导航栏样式调整（仅保留右侧导航链接） */
 .nav-container {
-    max-width: calc(100% - 300px); /* 适配侧边栏 */
-    margin: 0 0 0 300px; /* 完全左对齐，贴紧侧边栏右侧 */
-    padding: 15px 20px;
-    /* 修复：导航内部弹性布局+对齐精准+盒模型统一 */
+    max-width: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 15px 30px; /* 仅保留右侧内边距 */
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end; /* 导航链接靠最右侧 */
     align-items: center;
     box-sizing: border-box;
 }
@@ -56,7 +68,6 @@ nav {
     list-style: none;
     margin: 0;
     padding: 0;
-    /* 修复：导航链接水平对齐精准 */
     padding-left: 0;
 }
 .nav-links a {
@@ -290,18 +301,50 @@ h3 {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
 }
+
+/* ========== 底部栏样式（全屏宽度+高度降低+不重叠） ========== */
+/* 底部栏样式（补充内容居中） */
+/* ========== 底部栏样式（全屏宽度+高度降低+内容真正居中，解决偏右问题） ========== */
 footer {
     text-align: center;
-    padding: 30px 20px;
+    padding: 15px 20px;
     color: #7f8c8d;
-    font-size: 14px;
-    margin-top: 20px;
+    font-size: 12px;
+    margin-top: 50px;
     background: white;
     border-radius: 12px 12px 0 0;
     box-shadow: 0 -2px 12px rgba(0,0,0,0.05);
-    /* 适配侧边栏：桌面端靠左留出空间 */
-    margin-left: 300px;
+    width: 100%;
+    position: relative;
+    box-sizing: border-box;
+    z-index: 900;
 }
+
+/* 核心修改：重置footer内容容器，实现全页面水平居中，不再强制左移 */
+.footer-content {
+    width: 100%;
+    max-width: 1000px; /* 与主内容区宽度一致，保持视觉统一 */
+    margin: 0 auto; /* 关键：自动左右外边距，实现全页面水平居中 */
+    text-align: center; /* 内部文字强制居中 */
+    box-sizing: border-box;
+}
+
+/* 桌面端调整：不再强制左移300px，兼顾侧边栏视觉，保持内容居中 */
+@media (min-width: 993px) {
+    .footer-content {
+        /* 移除原有 margin: 0 0 0 300px; 避免内容偏右 */
+        max-width: calc(1000px - 300px); /* 适配主内容区宽度，不超出视觉范围 */
+        margin: 0 auto; /* 继续保持全页面水平居中，不偏右 */
+        text-align: center;
+    }
+}
+
+/* 优化footer内部文字间距，进一步提升居中视觉效果 */
+.footer-slogan, .footer-update {
+    margin: 2px 0;
+    display: block; /* 确保单行展示，居中更稳定 */
+}
+
 
 /* ========== News模块样式 ========== */
 .news-timeline {
@@ -374,43 +417,43 @@ footer {
     line-height: 1.7;
 }
 
-/* ========== 左侧固定侧边栏样式 ========== */
+/* ========== 左侧固定侧边栏样式（垂直全屏+内容居中+最底层） ========== */
 .sidebar {
-    position: fixed; /* 固定定位，不随滚动移动 */
+    position: fixed; /* 固定定位，保持左侧全屏展示 */
     left: 0;
-    top: 50%; /* 1. 垂直居中：先定位到视口垂直中点 */
-    transform: translateY(-50%); /* 1. 垂直居中：向上偏移自身高度的50%，实现完美居中 */
-    height: calc(100vh - 160px); /* 调整高度，避免超出视口，保持美观 */
-    width: 280px; /* 侧边栏宽度，可自定义 */
-    background-color: white; /* 背景色，与页面风格统一 */
+    top: 0; /* 顶部对齐视口，垂直全屏开始 */
+    bottom: 0; /* 底部对齐视口，实现垂直铺满左侧全长 */
+    width: 280px; /* 侧边栏宽度固定 */
+    background-color: white; /* 白色背景框 */
     box-shadow: 2px 0 12px rgba(0,0,0,0.08); /* 右侧阴影，提升层次感 */
-    padding: 40px 20px; /* 修复：优化内边距，保持视觉平衡 */
-    box-sizing: border-box;
-    z-index: 999; /* 层级低于导航栏，避免遮挡导航 */
-    overflow-y: auto; /* 小屏幕下侧边栏内容过多时可滚动 */
-    /* 修复：侧边栏统一圆角，与整体风格一致 */
-    border-radius: 0 12px 12px 0;
-    overflow: hidden;
+    padding: 80px 20px 60px 20px; /* 预留上下间距，避免内容被导航/ footer遮挡 */
+    box-sizing: border-box; /* 盒模型统一，内边距不超出全屏范围 */
+    z-index: 100; /* 极低z-index，确保位于最底层（不遮挡导航/ footer） */
+    overflow-y: hidden; /* 取消滚动条，保持布局整洁 */
+    border-radius: 0; /* 垂直全屏更协调，无圆角冗余 */
 }
 
-/* 侧边栏内部容器（居中对齐） */
+/* 侧边栏内部容器（水平+垂直双居中，核心样式） */
 .sidebar-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* 水平居中 */
+    justify-content: center; /* 垂直居中（核心修改） */
     text-align: center;
     width: 100%;
+    height: 100%; /* 填充侧边栏内部全部空间，确保居中生效 */
+    gap: 0; /* 取消冗余间隙，保持内容紧凑 */
 }
 
-/* 侧边栏头像样式（微调大小，保持原有风格） */
+/* 侧边栏头像样式（紧凑美观，间距微调） */
 .sidebar-profile-photo {
-    width: 160px;
-    height: 160px;
+    width: 130px;
+    height: 130px;
     border-radius: 16px;
     object-fit: cover;
     box-shadow: 0 8px 24px rgba(0,0,0,0.12);
     border: 4px solid white;
-    margin-bottom: 20px;
+    margin-bottom: 12px;
     transition: transform 0.3s ease;
 }
 
@@ -418,31 +461,32 @@ footer {
     transform: translateY(-5px);
 }
 
-/* 侧边栏个人信息样式 */
+/* 侧边栏个人信息样式（紧凑无冗余，保持美观） */
 .sidebar-info h1 {
-    font-size: 24px;
+    font-size: 22px;
     color: #2c3e50;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     text-align: center;
 }
 
 .sidebar-title {
     font-size: 14px;
     color: #7f8c8d;
-    margin-bottom: 6px;
-    line-height: 1.5;
+    margin-bottom: 3px;
+    line-height: 1.4;
     text-align: center; /* 确保文字居中 */
 }
 
-/* 侧边栏联系方式样式 */
+/* 侧边栏联系方式样式（紧凑对齐，无底部空白） */
 .sidebar-contact {
-    margin-top: 20px;
+    margin-top: 10px;
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 5px; /* 紧凑间距，压缩垂直空间 */
     width: 100%;
     align-items: center; /* 子元素水平居中 */
     text-align: center; /* 文字内容居中 */
+    margin-bottom: 0; /* 取消底部空白，避免冗余 */
 }
 
 /* 单个联系方式项（优化居中，统一样式） */
@@ -460,11 +504,11 @@ footer {
 /* ========== 右侧主内容区样式调整（留出侧边栏空间） ========== */
 .main-content {
     max-width: 1000px;
-    margin: 20px 20px 30px 300px; /* 左侧margin等于侧边栏宽度+20px，避免重叠 */
+    margin: 20px 20px 50px 300px; /* 左侧margin适配侧边栏，底部margin避免和footer重叠 */
     box-sizing: border-box;
 }
 
-/* 修复：主内容区所有模块统一风格、间距、对齐 */
+/* 主内容区所有模块统一风格、间距、对齐 */
 .main-content > section, 
 .main-content > header {
     border-radius: 12px;
@@ -474,13 +518,17 @@ footer {
     border: 1px solid rgba(0, 0, 0, 0.03);
 }
 
-/* ========== 自适应样式调整（移动端优化：显示基本信息，恢复原有布局） ========== */
+/* ========== 自适应样式调整（移动端优化） ========== */
 @media (max-width: 992px) {
-    /* 2. 移动端不隐藏侧边栏相关信息：改为显示原有header（承载基本信息），同时隐藏固定侧边栏 */
+    /* 移动端隐藏侧边栏 */
     .sidebar {
         display: none;
     }
-    /* 移动端强制显示header（承载个人基本信息，解决看不到左侧信息的问题） */
+    /* 新增：移动端隐藏桌面端fixed姓名，避免重复/错乱 */
+    .nav-left-fixed-name {
+        display: none;
+    }
+    /* 移动端强制显示header，承载个人信息 */
     header {
         display: block !important;
         background: white;
@@ -491,22 +539,49 @@ footer {
         border: 1px solid rgba(0,0,0,0.03);
         position: relative;
         overflow: hidden;
+        width: 100%;
+        box-sizing: border-box;
     }
 
     /* 恢复主内容区布局，无左侧margin */
     .main-content {
-        margin: 80px auto 30px;
+        margin: 80px auto 50px;
         max-width: 900px;
     }
 
-    /* 恢复导航栏布局 */
+    /* 修复：重置导航栏容器样式，移除多余的左侧310px padding */
+/* 原有导航栏样式调整（仅保留右侧导航链接，保持不变） */
     .nav-container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 15px 20px;
+        max-width: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 15px 30px; /* 仅保留右侧内边距，左侧无限制，让fixed姓名独立显示 */
+        display: flex;
+        justify-content: flex-end; /* 导航链接靠最右侧，固定不变 */
+        align-items: center;
+        box-sizing: border-box;
+    }
+@media (max-width: 992px) {
+    /* 其他样式不变，新增：移动端导航栏左侧姓名 */
+    .nav-container::before {
+        content: "Pan Feng";
+        font-size: 20px;
+        font-weight: 700;
+        color: #2c3e50;
+        letter-spacing: 0.5px;
+        margin-right: auto; /* 推到左侧，实现两端对齐 */
+    }
+    /* 导航链接保持靠右 */
+    .nav-container {
+        justify-content: flex-end;
+    }
+}
+    /* 移除：移动端无需.nav-left-name，删除多余样式 */
+    .nav-left-name {
+        display: none;
     }
 
-    /* 修复：移动端header内元素样式完整保留，确保信息正常显示 */
+    /* 移动端header内元素样式完整保留 */
     .profile {
         display: flex;
         gap: 30px;
@@ -534,9 +609,13 @@ footer {
         flex: 1;
     }
 
-    /* 移动端恢复页脚默认布局 */
+    /* 移动端footer内容居中 */
     footer {
         margin-left: 0;
+    }
+    .footer-content {
+        max-width: 900px;
+        margin: 0 auto;
     }
 
     /* 移动端主内容区模块统一对齐 */
@@ -602,7 +681,7 @@ footer {
     .nav-container {
         flex-direction: column;
         gap: 10px;
-        padding: 10px 20px;
+        padding: 15px 20px;
     }
     .nav-links {
         gap: 10px;
@@ -637,7 +716,7 @@ footer {
     }
 }
 
-/* 桌面端隐藏原有header（使用侧边栏展示基本信息，避免重复） */
+/* 桌面端隐藏header，避免内容重复 */
 @media (min-width: 993px) {
     header {
         display: none;
